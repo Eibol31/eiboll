@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snoopy's English Vocabulary Adventure</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .snoopy-container {
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+        }
+        #snoopy {
+            height: 180px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        #snoopy:hover {
+            transform: scale(1.05);
+        }
+        .word-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #2c3e50;
+            min-height: 60px;
+        }
+        .meaning {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+        .example {
+            font-style: italic;
+            color: #6c757d;
+            margin: 10px 0;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #next-btn {
+            background-color: #3498db;
+        }
+        #next-btn:hover {
+            background-color: #2980b9;
+        }
+        #speak-btn {
+            background-color: #9b59b6;
+        }
+        #speak-btn:hover {
+            background-color: #8e44ad;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        #progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+        .feedback {
+            margin: 10px 0;
+            font-weight: bold;
+            min-height: 24px;
+        }
+        .correct {
+            color: #27ae60;
+        }
+        .incorrect {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Snoopy's English Vocabulary Adventure</h1>
+        <p>Learn B2 level words with Snoopy! Click on Snoopy for surprises!</p>
+        
+        <div class="snoopy-container">
+            <img id="snoopy" src="https://purepng.com/public/uploads/large/purepng.com-snoopysnoopypeanuts-charlie-browncharles-schulzcartooncharacter-1701528653853b5z8z.png" alt="Snoopy">
+        </div>
+        
+        <div class="word-display" id="current-word">Ready to learn?</div>
+        <div class="meaning" id="word-meaning"></div>
+        <div class="example" id="word-example"></div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="buttons">
+            <button id="show-meaning-btn">Show Meaning</button>
+            <button id="speak-btn">Hear Pronunciation</button>
+            <button id="next-btn">Next Word</button>
+        </div>
+        
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        
+        <div class="score">Words learned: <span id="word-count">0</span>/20</div>
+    </div>
+
+    <script>
+        // B2 Level Vocabulary Words
+        const vocabulary = [
+            {
+                word: "Ambiguous",
+                meaning: "Open to more than one interpretation; not having one obvious meaning",
+                example: "The politician's ambiguous statement left reporters confused about his position."
+            },
+            {
+                word: "Benevolent",
+                meaning: "Well meaning and kindly",
+                example: "The benevolent old man donated most of his fortune to charity."
+            },
+            {
+                word: "Conundrum",
+                meaning: "A confusing and difficult problem or question",
+                example: "The team faced the conundrum of how to reduce costs without laying off staff."
+            },
+            {
+                word: "Diligent",
+                meaning: "Having or showing care and conscientiousness in one's work or duties",
+                example: "The diligent student always completed her homework on time."
+            },
+            {
+                word: "Ephemeral",
+                meaning: "Lasting for a very short time",
+                example: "The ephemeral nature of social media trends makes them hard to predict."
+            },
+            {
+                word: "Fastidious",
+                meaning: "Very attentive to and concerned about accuracy and detail",
+                example: "The fastidious editor checked every comma and semicolon in the manuscript."
+            },
+            {
+                word: "Gregarious",
+                meaning: "Fond of company; sociable",
+                example: "The gregarious puppy loved meeting new people at the park."
+            },
+            {
+                word: "Haphazard",
+                meaning: "Lacking any obvious principle of organization",
+                example: "The books were arranged in a haphazard manner on the shelves."
+            },
+            {
+                word: "Iconoclast",
+                meaning: "A person who attacks cherished beliefs or institutions",
+                example: "The scientist was considered an iconoclast for challenging established theories."
+            },
+            {
+                word: "Juxtapose",
+                meaning: "Place or deal with close together for contrasting effect",
+                example: "The exhibition juxtaposes modern art with classical pieces."
+            },
+            {
+                word: "Kaleidoscopic",
+                meaning: "Having complex patterns of colors; constantly changing",
+                example: "The kaleidoscopic display of fireworks lit up the night sky."
+            },
+            {
+                word: "Languid",
+                meaning: "Displaying or having a disinclination for physical exertion; slow and relaxed",
+                example: "The hot afternoon made everyone feel languid and sleepy."
+            },
+            {
+                word: "Meticulous",
+                meaning: "Showing great attention to detail; very careful and precise",
+                example: "The meticulous architect spent hours perfecting the building plans."
+            },
+            {
+                word: "Nonchalant",
+                meaning: "Feeling or appearing casually calm and relaxed; not displaying anxiety",
+                example: "She tried to appear nonchalant about the exam results, but inside she was nervous."
+            },
+            {
+                word: "Ostentatious",
+                meaning: "Designed to impress or attract notice; flashy",
+                example: "The billionaire's ostentatious mansion was visible from miles away."
+            },
+            {
+                word: "Pragmatic",
+                meaning: "Dealing with things sensibly and realistically",
+                example: "The mayor took a pragmatic approach to solving the city's traffic problems."
+            },
+            {
+                word: "Quandary",
+                meaning: "A state of perplexity or uncertainty over what to do in a difficult situation",
+                example: "I was in a quandary about whether to accept the job offer or stay in school."
+            },
+            {
+                word: "Resilient",
+                meaning: "Able to withstand or recover quickly from difficult conditions",
+                example: "The resilient community rebuilt quickly after the hurricane."
+            },
+            {
+                word: "Serendipity",
+                meaning: "The occurrence of events by chance in a happy or beneficial way",
+                example: "Finding that rare book at the flea market was pure serendipity."
+            },
+            {
+                word: "Trepidation",
+                meaning: "A feeling of fear or agitation about something that may happen",
+                example: "She felt some trepidation about moving to a new country alone."
+            }
+        ];
+
+        let currentWordIndex = 0;
+        let wordsLearned = 0;
+        const totalWords = vocabulary.length;
+        
+        // DOM elements
+        const wordDisplay = document.getElementById('current-word');
+        const meaningDisplay = document.getElementById('word-meaning');
+        const exampleDisplay = document.getElementById('word-example');
+        const showMeaningBtn = document.getElementById('show-meaning-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const speakBtn = document.getElementById('speak-btn');
+        const wordCount = document.getElementById('word-count');
+        const progressBar = document.getElementById('progress-bar');
+        const feedback = document.getElementById('feedback');
+        const snoopy = document.getElementById('snoopy');
+        
+        // Initialize
+        displayWord();
+        updateProgress();
+        
+        // Event listeners
+        showMeaningBtn.addEventListener('click', showMeaning);
+        nextBtn.addEventListener('click', nextWord);
+        speakBtn.addEventListener('click', speakWord);
+        snoopy.addEventListener('click', snoopyReaction);
+        
+        // Functions
+        function displayWord() {
+            const currentWord = vocabulary[currentWordIndex];
+            wordDisplay.textContent = currentWord.word;
+            meaningDisplay.textContent = currentWord.meaning;
+            exampleDisplay.textContent = currentWord.example;
+            meaningDisplay.style.display = 'none';
+            exampleDisplay.style.display = 'none';
+            feedback.textContent = '';
+        }
+        
+        function showMeaning() {
+            meaningDisplay.style.display = 'block';
+            exampleDisplay.style.display = 'block';
+            wordsLearned++;
+            wordCount.textContent = wordsLearned;
+            updateProgress();
+            feedback.textContent = "Great job learning a new word!";
+            feedback.className = "feedback correct";
+        }
+        
+        function nextWord() {
+            currentWordIndex = (currentWordIndex + 1) % vocabulary.length;
+            displayWord();
+        }
+        
+        function speakWord() {
+            const currentWord = vocabulary[currentWordIndex];
+            const utterance = new SpeechSynthesisUtterance(currentWord.word);
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+            
+            // Snoopy animation
+            snoopy.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                snoopy.style.transform = 'scale(1)';
+            }, 300);
+        }
+        
+        function updateProgress() {
+            const progress = (wordsLearned / totalWords) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        function snoopyReaction() {
+            const reactions = [
+                "Woof! Good job!",
+                "That's a great word!",
+                "You're learning fast!",
+                "I'm proud of you!",
+                "Let's learn more words!"
+            ];
+            const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+            
+            feedback.textContent = randomReaction;
+            feedback.className = "feedback correct";
+            
+            // Snoopy animation
+            snoopy.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                snoopy.style.transform = 'translateY(0)';
+            }, 300);
+        }
+    </script>
+</body>
+</html>
