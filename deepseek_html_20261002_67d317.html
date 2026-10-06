@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speaking &amp; Pronunciation – Psalm 91 (NIV)</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    background: #f5f7fa;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    max-width: 900px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 0 2rem 2rem 2rem;
+    margin: 2rem 1rem;
+  }
+
+  /* ====== PANEL FIJO (STICKY) ====== */
+  .sticky-panel {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 100;
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 20px 20px 0 0;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  /* ================================ */
+
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin: 0 0 0.3rem 0;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #e2e8f0;
+  }
+  .controls label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #334155;
+  }
+  .controls input[type="range"] {
+    width: 130px;
+    accent-color: #3b82f6;
+  }
+  .controls button {
+    padding: 0.45rem 1.1rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  }
+  .controls button:active:not(:disabled) { transform: scale(0.97); }
+  .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+  #playBtn { background: #3b82f6; color: #fff; min-width: 130px; }
+  #playBtn:hover:not(:disabled) { background: #2563eb; }
+  #pauseBtn { background: #f59e0b; color: #fff; }
+  #pauseBtn:hover:not(:disabled) { background: #d97706; }
+  #stopBtn { background: #ef4444; color: #fff; }
+  #stopBtn:hover:not(:disabled) { background: #dc2626; }
+  #reloadBtn { background: #64748b; color: #fff; }
+  #reloadBtn:hover:not(:disabled) { background: #475569; }
+
+  .voice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 14px;
+    padding: 0.6rem 1.2rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #e2e8f0;
+  }
+  .voice-row select {
+    padding: 0.35rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    font-size: 0.85rem;
+  }
+  #langFilter { max-width: 200px; }
+  #voiceSelect { max-width: 300px; flex: 1; min-width: 180px; }
+  #voiceCount {
+    font-size: 0.75rem;
+    color: #64748b;
+    width: 100%;
+    text-align: center;
+  }
+
+  .current-ipa {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.75rem;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  .current-ipa #currentWord { font-weight: 700; color: #0f172a; }
+  .current-ipa #currentIpa {
+    font-family: 'Courier New', monospace;
+    color: #3b82f6;
+    font-weight: 600;
+  }
+
+  /* ====== TEXTO ====== */
+  #textContainer { line-height: 2.2; font-size: 1.05rem; }
+  #textContainer p { margin: 0 0 1.2rem 0; }
+  #textContainer p.title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+    color: #0f172a;
+  }
+  .verse-num {
+    display: inline-block;
+    font-weight: 700;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-right: 0.4rem;
+    vertical-align: super;
+    line-height: 1;
+    user-select: none;
+  }
+  .word {
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    cursor: pointer;
+    padding: 0 3px;
+    border-radius: 6px;
+    transition: background 0.12s, box-shadow 0.12s;
+    margin: 0 1px;
+  }
+  .word:hover { background: #e0e7ff; }
+  .word.active {
+    background: #fde047;
+    box-shadow: 0 0 0 2px #eab308;
+  }
+  .word-text { display: block; font-weight: 500; color: #1e293b; }
+  .word-ipa {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-top: 1px;
+    white-space: nowrap;
+  }
+  .word.active .word-ipa { color: #000; font-weight: 700; }
+
+  .note {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- PANEL FIJO (STICKY) -->
+  <div class="sticky-panel">
+    <h1>Speaking &amp; Pronunciation Practice</h1>
+    <div class="subtitle">Psalm 91 · Haz clic en cualquier palabra para escucharla aislada</div>
+
+    <div class="controls">
+      <label for="speed">Velocidad: <span id="speedValue">1.00</span>x</label>
+      <input type="range" id="speed" min="0.5" max="1.5" step="0.05" value="1.0">
+      <button id="playBtn">▶ Reproducir</button>
+      <button id="pauseBtn" disabled>⏸ Pausar</button>
+      <button id="stopBtn" disabled>⏹ Detener</button>
+    </div>
+
+    <div class="voice-row">
+      <label for="langFilter">Idioma:</label>
+      <select id="langFilter">
+        <option value="all">Todos</option>
+        <option value="en" selected>Inglés (todas las variantes)</option>
+        <option value="en-US">Inglés US</option>
+        <option value="en-GB">Inglés UK</option>
+        <option value="en-AU">Inglés AU</option>
+        <option value="en-IN">Inglés IN</option>
+        <option value="other">Otros idiomas</option>
+      </select>
+
+      <label for="voiceSelect">Voz:</label>
+      <select id="voiceSelect"></select>
+
+      <button id="reloadBtn">🔄 Recargar voces</button>
+      <span id="voiceCount"></span>
+    </div>
+
+    <div class="current-ipa">
+      <span id="currentWord">—</span>
+      <span id="currentIpa">/—/</span>
+    </div>
+  </div>
+
+  <!-- TEXTO -->
+  <div id="textContainer"></div>
+
+  <div class="note">
+    IPA aproximado (General American). La lectura se divide en fragmentos cortos para que
+    <strong>Pausar / Continuar</strong> funcione con precisión.<br>
+    Texto: Salmo 91 — New International Version (NIV).
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // 1. TEXTO — PSALM 91 (NIV, según las imágenes)
+  // ============================================================
+  const paragraphs = [
+    "Psalm 91",
+    "1 Whoever dwells in the shelter of the Most High will rest in the shadow of the Almighty.[a]",
+    "2 I will say of the LORD, “He is my refuge and my fortress, my God, in whom I trust.”",
+    "3 Surely he will save you from the fowler’s snare and from the deadly pestilence.",
+    "4 He will cover you with his feathers, and under his wings you will find refuge; his faithfulness will be your shield and rampart.",
+    "5 You will not fear the terror of night, nor the arrow that flies by day,",
+    "6 nor the pestilence that stalks in the darkness, nor the plague that destroys at midday.",
+    "7 A thousand may fall at your side, ten thousand at your right hand, but it will not come near you.",
+    "8 You will only observe with your eyes and see the punishment of the wicked.",
+    "9 If you say, “The LORD is my refuge,” and you make the Most High your dwelling,",
+    "10 no harm will overtake you, no disaster will come near your tent.",
+    "11 For he will command his angels concerning you to guard you in all your ways;",
+    "12 they will lift you up in their hands, so that you will not strike your foot against a stone.",
+    "13 You will tread on the lion and the cobra; you will trample the great lion and the serpent.",
+    "14 “Because he[b] loves me,” says the LORD, “I will rescue him; I will protect him, for he acknowledges my name.",
+    "15 He will call on me, and I will answer him; I will be with him in trouble, I will deliver him and honor him.",
+    "16 With long life I will satisfy him and show him my salvation.”"
+  ];
+
+  const fullText = paragraphs.join('\n\n');
+
+  // ============================================================
+  // 2. DICCIONARIO IPA (General American aproximado)
+  // ============================================================
+  const ipaDict = {
+    "a": "/ə/", "acknowledges": "/əkˈnɑl.ɪ.dʒɪz/", "almighty": "/ɔlˈmaɪ.ti/",
+    "and": "/ænd/", "angels": "/ˈeɪn.dʒəlz/", "answer": "/ˈæn.sər/",
+    "arrow": "/ˈær.oʊ/", "at": "/æt/", "be": "/bi/", "because": "/bɪˈkɔz/",
+    "but": "/bʌt/", "by": "/baɪ/", "call": "/kɔl/", "cobra": "/ˈkoʊ.brə/",
+    "come": "/kʌm/", "command": "/kəˈmænd/", "concerning": "/kənˈsɜr.nɪŋ/",
+    "cover": "/ˈkʌv.ər/", "darkness": "/ˈdɑrk.nəs/", "day": "/deɪ/",
+    "deadly": "/ˈdɛd.li/", "deliver": "/dɪˈlɪv.ər/", "destroy": "/dɪˈstrɔɪ/",
+    "disaster": "/dɪˈzæs.tər/", "dwelling": "/ˈdwɛl.ɪŋ/", "dwells": "/dwɛlz/",
+    "eyes": "/aɪz/", "fall": "/fɔl/", "faithfulness": "/ˈfeɪθ.fəl.nəs/",
+    "fear": "/fɪr/", "feathers": "/ˈfɛð.ərz/", "flies": "/flaɪz/",
+    "foot": "/fʊt/", "for": "/fɔr/", "fortress": "/ˈfɔr.trɪs/",
+    "fowler": "/ˈfaʊ.lər/", "from": "/frʌm/", "god": "/ɡɑd/",
+    "great": "/ɡreɪt/", "guard": "/ɡɑrd/", "hand": "/hænd/",
+    "hands": "/hændz/", "harm": "/hɑrm/", "he": "/hi/", "high": "/haɪ/",
+    "him": "/hɪm/", "his": "/hɪz/", "honor": "/ˈɑn.ər/", "i": "/aɪ/",
+    "if": "/ɪf/", "in": "/ɪn/", "is": "/ɪz/", "it": "/ɪt/",
+    "lift": "/lɪft/", "life": "/laɪf/", "lion": "/ˈlaɪ.ən/", "long": "/lɔŋ/",
+    "lord": "/lɔrd/", "loves": "/lʌvz/", "make": "/meɪk/", "may": "/meɪ/",
+    "me": "/mi/", "midday": "/ˌmɪdˈdeɪ/", "most": "/moʊst/", "my": "/maɪ/",
+    "name": "/neɪm/", "near": "/nɪr/", "night": "/naɪt/", "no": "/noʊ/",
+    "nor": "/nɔr/", "not": "/nɑt/", "observe": "/əbˈzɜrv/", "of": "/əv/",
+    "on": "/ɑn/", "only": "/ˈoʊn.li/", "overtake": "/ˌoʊ.vərˈteɪk/",
+    "pestilence": "/ˈpɛs.tə.ləns/", "plague": "/pleɪɡ/", "protect": "/prəˈtɛkt/",
+    "punishment": "/ˈpʌn.ɪʃ.mənt/", "rampart": "/ˈræm.pɑrt/", "refuge": "/ˈrɛf.judʒ/",
+    "rescue": "/ˈrɛs.kju/", "rest": "/rɛst/", "right": "/raɪt/",
+    "satisfy": "/ˈsæt.ɪs.faɪ/", "save": "/seɪv/", "salvation": "/sælˈveɪ.ʃən/",
+    "say": "/seɪ/", "says": "/sɛz/", "see": "/si/", "serpent": "/ˈsɜr.pənt/",
+    "shadow": "/ˈʃæd.oʊ/", "shelter": "/ˈʃɛl.tər/", "shield": "/ʃild/",
+    "show": "/ʃoʊ/", "side": "/saɪd/", "snare": "/snɛr/", "so": "/soʊ/",
+    "stalks": "/stɔks/", "stone": "/stoʊn/", "strike": "/straɪk/",
+    "surely": "/ˈʃʊr.li/", "ten": "/tɛn/", "tent": "/tɛnt/",
+    "terror": "/ˈtɛr.ər/", "that": "/ðæt/", "the": "/ðə/", "their": "/ðɛr/",
+    "they": "/ðeɪ/", "thousand": "/ˈθaʊ.zənd/", "to": "/tu/",
+    "trample": "/ˈtræm.pəl/", "tread": "/trɛd/", "trouble": "/ˈtrʌb.əl/",
+    "trust": "/trʌst/", "under": "/ˈʌn.dər/", "up": "/ʌp/",
+    "us": "/ʌs/", "wastes": "/weɪsts/", "ways": "/weɪz/", "who": "/hu/",
+    "whom": "/hum/", "wicked": "/ˈwɪk.ɪd/", "will": "/wɪl/", "wings": "/wɪŋz/",
+    "with": "/wɪð/", "you": "/ju/", "your": "/jʊr/"
+  };
+
+  // ============================================================
+  // 3. CONSTRUCCIÓN DEL TEXTO CON SPANS E IPA
+  // ============================================================
+  const textContainer = document.getElementById('textContainer');
+  const wordSpans = [];
+  let charIndex = 0;
+
+  function getIPA(word) {
+    const key = word.toLowerCase().replace(/[^a-z]/g, '');
+    return ipaDict[key] || '';
+  }
+
+  paragraphs.forEach((para, pIndex) => {
+    const p = document.createElement('p');
+    if (pIndex === 0) p.classList.add('title');
+
+    // Detectar número de versículo al inicio (ej. "1 ", "2 ")
+    const verseMatch = para.match(/^(\d+)\s+(.*)/s);
+    let textToProcess = para;
+    if (verseMatch && pIndex > 0) {
+      const verseNum = document.createElement('span');
+      verseNum.className = 'verse-num';
+      verseNum.textContent = verseMatch[1];
+      p.appendChild(verseNum);
+      textToProcess = verseMatch[2];
+      charIndex += verseMatch[1].length + 1; // +1 por el espacio
+    }
+
+    const parts = textToProcess.split(/([A-Za-z]+(?:['’-][A-Za-z]+)*)/);
+
+    parts.forEach(part => {
+      if (part === '') return;
+
+      if (/^[A-Za-z]+(?:['’-][A-Za-z]+)*$/.test(part)) {
+        const span = document.createElement('span');
+        span.className = 'word';
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'word-text';
+        textSpan.textContent = part;
+
+        const ipaSpan = document.createElement('span');
+        ipaSpan.className = 'word-ipa';
+        ipaSpan.textContent = getIPA(part);
+
+        span.appendChild(textSpan);
+        span.appendChild(ipaSpan);
+        span.dataset.word = part;
+        span.dataset.ipa = getIPA(part);
+        span.dataset.start = charIndex;
+
+        span.addEventListener('click', () => {
+          speakWord(part, parseInt(span.dataset.start, 10), span);
+        });
+
+        p.appendChild(span);
+        wordSpans.push(span);
+        charIndex += part.length;
+      } else {
+        p.appendChild(document.createTextNode(part));
+        charIndex += part.length;
+      }
+    });
+
+    textContainer.appendChild(p);
+    if (pIndex < paragraphs.length - 1) charIndex += 2; // "\n\n"
+  });
+
+  // ============================================================
+  // 4. CONTROLES Y GESTIÓN DE VOCES
+  // ============================================================
+  const speedSlider  = document.getElementById('speed');
+  const speedValue   = document.getElementById('speedValue');
+  const voiceSelect  = document.getElementById('voiceSelect');
+  const langFilter   = document.getElementById('langFilter');
+  const reloadBtn    = document.getElementById('reloadBtn');
+  const voiceCount   = document.getElementById('voiceCount');
+  const playBtn      = document.getElementById('playBtn');
+  const pauseBtn     = document.getElementById('pauseBtn');
+  const stopBtn      = document.getElementById('stopBtn');
+  const currentWordEl = document.getElementById('currentWord');
+  const currentIpaEl  = document.getElementById('currentIpa');
+
+  let allVoices = [];
+
+  speedSlider.addEventListener('input', () => {
+    speedValue.textContent = parseFloat(speedSlider.value).toFixed(2);
+  });
+
+  function voiceQuality(v) {
+    const n = v.name.toLowerCase();
+    let score = 0;
+    if (n.includes('natural')) score += 100;
+    if (n.includes('online')) score += 50;
+    if (n.includes('google')) score += 40;
+    if (n.includes('premium') || n.includes('enhanced')) score += 30;
+    if (n.includes('microsoft')) score += 20;
+    if (v.localService === false) score += 10;
+    return score;
+  }
+
+  function isRecommended(v) {
+    const n = v.name.toLowerCase();
+    return n.includes('natural') || n.includes('google') || n.includes('online') ||
+           n.includes('premium') || n.includes('enhanced');
+  }
+
+  function filterVoices(voices, filter) {
+    if (filter === 'all') return voices;
+    if (filter === 'en') return voices.filter(v => v.lang.toLowerCase().startsWith('en'));
+    if (filter === 'other') return voices.filter(v => !v.lang.toLowerCase().startsWith('en'));
+    return voices.filter(v =>
+      v.lang.toLowerCase().replace('_', '-').startsWith(filter.toLowerCase()));
+  }
+
+  function langLabel(code) {
+    const map = {
+      'en-US': 'Inglés (EE.UU.)', 'en-GB': 'Inglés (Reino Unido)',
+      'en-AU': 'Inglés (Australia)', 'en-IN': 'Inglés (India)',
+      'en-CA': 'Inglés (Canadá)', 'en-NZ': 'Inglés (Nueva Zelanda)',
+      'en-IE': 'Inglés (Irlanda)', 'en-ZA': 'Inglés (Sudáfrica)',
+      'es-ES': 'Español (España)', 'es-MX': 'Español (México)',
+      'es-US': 'Español (EE.UU.)', 'es-AR': 'Español (Argentina)',
+      'fr-FR': 'Francés', 'de-DE': 'Alemán', 'it-IT': 'Italiano',
+      'pt-BR': 'Portugués (Brasil)', 'pt-PT': 'Portugués (Portugal)',
+      'ja-JP': 'Japonés', 'ko-KR': 'Coreano', 'zh-CN': 'Chino (Mandarín)',
+      'zh-TW': 'Chino (Taiwán)', 'ru-RU': 'Ruso', 'ar-SA': 'Árabe',
+      'hi-IN': 'Hindi', 'nl-NL': 'Neerlandés', 'pl-PL': 'Polaco',
+      'sv-SE': 'Sueco', 'tr-TR': 'Turco'
+    };
+    return map[code] || code;
+  }
+
+  function renderVoiceOptions() {
+    const filter = langFilter.value;
+    const filtered = filterVoices(allVoices, filter)
+      .sort((a, b) => voiceQuality(b) - voiceQuality(a) || a.name.localeCompare(b.name));
+
+    voiceSelect.innerHTML = '';
+
+    if (filtered.length === 0) {
+      const opt = document.createElement('option');
+      opt.textContent = 'Sin voces para este filtro';
+      voiceSelect.appendChild(opt);
+      voiceCount.textContent = `0 voces mostradas · ${allVoices.length} totales en el sistema`;
+      return;
+    }
+
+    const groups = {};
+    filtered.forEach(v => {
+      const key = v.lang.replace('_', '-');
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(v);
+    });
+
+    Object.keys(groups).sort().forEach(langCode => {
+      const group = document.createElement('optgroup');
+      group.label = langLabel(langCode);
+
+      groups[langCode].forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        const star = isRecommended(v) ? '⭐ ' : '';
+        const local = v.localService ? '' : ' ☁';
+        opt.textContent = `${star}${v.name}${local}`;
+        group.appendChild(opt);
+      });
+
+      voiceSelect.appendChild(group);
+    });
+
+    voiceCount.textContent =
+      `${filtered.length} voces mostradas · ${allVoices.length} totales en el sistema`;
+  }
+
+  function loadVoices() {
+    allVoices = speechSynthesis.getVoices();
+    if (allVoices.length === 0) {
+      voiceCount.textContent = 'Cargando voces…';
+      return;
+    }
+    renderVoiceOptions();
+  }
+
+  speechSynthesis.onvoiceschanged = loadVoices;
+  loadVoices();
+  setTimeout(loadVoices, 300);
+  setTimeout(loadVoices, 1000);
+
+  langFilter.addEventListener('change', renderVoiceOptions);
+  reloadBtn.addEventListener('click', () => {
+    speechSynthesis.cancel();
+    allVoices = speechSynthesis.getVoices();
+    renderVoiceOptions();
+  });
+
+  function getSelectedVoice() {
+    const name = voiceSelect.value;
+    return allVoices.find(v => v.name === name) || null;
+  }
+
+  // ============================================================
+  // 5. MOTOR DE REPRODUCCIÓN CON PAUSA/REANUDACIÓN REAL
+  // ============================================================
+  const MAX_CHUNK = 160; // caracteres por fragmento (evita el corte a los ~15 s)
+
+  function buildChunks(text, maxLen) {
+    const chunks = [];
+    const n = text.length;
+    let i = 0;
+    while (i < n) {
+      while (i < n && /\s/.test(text[i])) i++;
+      if (i >= n) break;
+
+      let end = Math.min(i + maxLen, n);
+      if (end < n) {
+        let cut = -1;
+        for (let j = end; j > i; j--) {
+          if (/[.!?;:]/.test(text[j - 1])) { cut = j; break; }
+        }
+        if (cut === -1 || (cut - i) < maxLen * 0.45) {
+          const sp = text.lastIndexOf(' ', end);
+          if (sp > i + maxLen * 0.45) cut = sp + 1;
+          else if (cut === -1) cut = end;
+        }
+        if (cut > i) end = cut;
+      }
+
+      chunks.push({ text: text.slice(i, end), start: i });
+      i = end;
+    }
+    return chunks;
+  }
+
+  const chunks = buildChunks(fullText, MAX_CHUNK);
+
+  let session      = 0;      // invalida callbacks antiguos
+  let isPlaying    = false;
+  let isPaused     = false;
+  let lastAbs      = 0;      // índice absoluto (en fullText) de la palabra actual
+  let currentUtt   = null;
+
+  function findChunkIndex(abs) {
+    for (let k = 0; k < chunks.length; k++) {
+      const c = chunks[k];
+      if (abs < c.start + c.text.length) return k;
+    }
+    return -1;
+  }
+
+  function highlightWordAt(index) {
+    let found = null;
+    for (let i = 0; i < wordSpans.length; i++) {
+      const span = wordSpans[i];
+      const start = parseInt(span.dataset.start, 10);
+      const word = span.dataset.word;
+      if (index >= start && index < start + word.length) { found = span; break; }
+    }
+    if (!found) {
+      for (let i = wordSpans.length - 1; i >= 0; i--) {
+        const span = wordSpans[i];
+        if (parseInt(span.dataset.start, 10) <= index) { found = span; break; }
+      }
+    }
+    if (found) {
+      clearHighlights(true);
+      found.classList.add('active');
+      currentWordEl.textContent = found.dataset.word;
+      currentIpaEl.textContent = found.dataset.ipa || '/—/';
+      found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function clearHighlights(keepLabels) {
+    wordSpans.forEach(s => s.classList.remove('active'));
+    if (!keepLabels) {
+      currentWordEl.textContent = '—';
+      currentIpaEl.textContent = '/—/';
+    }
+  }
+
+  function updateButtons() {
+    if (isPaused) {
+      playBtn.textContent = '▶ Continuar';
+    } else {
+      playBtn.textContent = '▶ Reproducir';
+    }
+    playBtn.disabled  = isPlaying && !isPaused;
+    pauseBtn.disabled = !isPlaying || isPaused;
+    stopBtn.disabled  = !isPlaying;
+  }
+
+  function startPlayback(fromAbs) {
+    speechSynthesis.cancel();
+    session++;
+    const mySession = session;
+
+    isPlaying = true;
+    isPaused  = false;
+    updateButtons();
+
+    let pos = Math.max(0, Math.min(fromAbs, fullText.length));
+    lastAbs = pos;
+
+    function step() {
+      if (mySession !== session) return;
+
+      const ci = findChunkIndex(pos);
+      if (ci === -1) { finishPlayback(); return; }
+
+      const chunk = chunks[ci];
+      let offset = Math.max(0, pos - chunk.start);
+      let raw = chunk.text.slice(offset);
+      const lead = raw.length - raw.replace(/^\s+/, '').length;
+      offset += lead;
+      const text = raw.replace(/^\s+/, '');
+      if (!text) { pos = chunk.start + chunk.text.length; return step(); }
+
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.rate = parseFloat(speedSlider.value);
+      const v = getSelectedVoice();
+      if (v) { utt.voice = v; utt.lang = v.lang; }
+
+      utt.onboundary = (e) => {
+        if (mySession !== session) return;
+        if (typeof e.charIndex === 'number') {
+          const abs = chunk.start + offset + e.charIndex;
+          lastAbs = abs;
+          highlightWordAt(abs);
+        }
+      };
+
+      utt.onend = () => {
+        if (mySession !== session) return;
+        pos = chunk.start + chunk.text.length;
+        lastAbs = pos;
+        step();
+      };
+
+      utt.onerror = (e) => {
+        if (mySession !== session) return;
+        if (e.error === 'canceled' || e.error === 'interrupted') return;
+        pos = chunk.start + chunk.text.length;
+        lastAbs = pos;
+        step();
+      };
+
+      currentUtt = utt;
+      highlightWordAt(chunk.start + offset);
+      speechSynthesis.speak(utt);
+    }
+
+    // Pequeña espera tras cancel() — evita que Chrome ignore el nuevo speak()
+    setTimeout(step, 70);
+  }
+
+  function pausePlayback() {
+    if (!isPlaying || isPaused) return;
+    isPaused = true;
+    session++;                    // invalida los callbacks pendientes
+    speechSynthesis.cancel();
+    currentUtt = null;
+    updateButtons();              // lastAbs conserva la posición exacta
+  }
+
+  function resumePlayback() {
+    if (!isPlaying || !isPaused) return;
+    startPlayback(lastAbs);
+  }
+
+  function stopPlayback() {
+    session++;
+    speechSynthesis.cancel();
+    isPlaying = false;
+    isPaused  = false;
+    lastAbs   = 0;
+    currentUtt = null;
+    clearHighlights(false);
+    updateButtons();
+  }
+
+  function finishPlayback() {
+    isPlaying = false;
+    isPaused  = false;
+    lastAbs   = 0;
+    currentUtt = null;
+    clearHighlights(false);
+    updateButtons();
+  }
+
+  function speakWord(word, absStart, span) {
+    // Detiene la lectura en curso pero conserva el punto para poder continuar
+    session++;
+    speechSynthesis.cancel();
+    isPlaying = false;
+    isPaused  = false;
+    currentUtt = null;
+    lastAbs = absStart;
+    updateButtons();
+
+    clearHighlights(true);
+    if (span) span.classList.add('active');
+    currentWordEl.textContent = word;
+    currentIpaEl.textContent = getIPA(word) || '/—/';
+
+    setTimeout(() => {
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.rate = parseFloat(speedSlider.value);
+      const v = getSelectedVoice();
+      if (v) { utt.voice = v; utt.lang = v.lang; }
+      speechSynthesis.speak(utt);
+    }, 70);
+  }
+
+  // --- Botones ---
+  playBtn.addEventListener('click', () => {
+    if (isPaused) { resumePlayback(); return; }
+    if (isPlaying) return;
+    startPlayback(lastAbs);
+  });
+
+  pauseBtn.addEventListener('click', pausePlayback);
+  stopBtn.addEventListener('click', stopPlayback);
+
+  // Barra espaciadora = pausar / continuar
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+      e.preventDefault();
+      if (isPaused) resumePlayback();
+      else if (isPlaying) pausePlayback();
+      else startPlayback(lastAbs);
+    }
+  });
+
+  updateButtons();
+
+  if (!('speechSynthesis' in window)) {
+    alert('Tu navegador no soporta la API de síntesis de voz. Prueba con Chrome o Edge.');
+  }
+</script>
+</body>
+</html>
